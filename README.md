@@ -37,3 +37,7 @@ docker run -it --rm --link server:postgres postgres psql -h postgres -U postgres
 ```
 scp 146.148.11.168:/home/team3/path/to/file/on/remote/host /path/to/local/dir
 ```
+Чтобы наоборот, скопировать файл со своей машины на remote
+```
+scp /path/to/local/file 146.148.11.168:/home/team3/path/to/remote/dir
+```
