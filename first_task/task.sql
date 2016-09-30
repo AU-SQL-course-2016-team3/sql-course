@@ -1,13 +1,13 @@
 -- list of sports available on this olympiad
 CREATE TABLE Sport (
     id                SERIAL           PRIMARY KEY,
-    name              TEXT             NOT NULL UNIQUE CHECK (name SIMILAR TO '([A-Z][a-z]*[:space:])*[A-Z][a-z]*')
+    name              TEXT             NOT NULL UNIQUE
 );
 
 -- list of countries which will participate in this olympiad
 CREATE TABLE Country (
     id                SERIAL           PRIMARY KEY,
-    name              TEXT             NOT NULL UNIQUE CHECK (name SIMILAR TO '([A-Z][a-z]*[:space:])*[A-Z][a-z]*')
+    name              TEXT             NOT NULL
 );
 
 -- list of constructions in olympic village
@@ -28,14 +28,14 @@ CREATE TABLE ConstructionSports (
 -- list of volunteers
 CREATE TABLE Volunteer (
     id                INTEGER          PRIMARY KEY,
-    name              TEXT             NOT NULL CHECK (name SIMILAR to '([A-Z][a-z]*[:space:])*[A-Z][a-z]*'),
-    phone             TEXT             NOT NULL UNIQUE CHECK (phone SIMILAR TO '\+[0-9]*')
+    name              TEXT             NOT NULL,
+    phone             TEXT             NOT NULL
 );
 
 -- list of sportsmen
 CREATE TABLE Sportsman (
     id                INTEGER          PRIMARY KEY,
-    name              TEXT             NOT NULL CHECK (name SIMILAR TO '([A-Z][a-z]*[:space:])*[A-Z][a-z]*'),
+    name              TEXT             NOT NULL,
     age               INTEGER          NOT NULL CHECK (age > 0),
     sex               TEXT             NOT NULL CHECK (sex IN ('male', 'female')),
     weight            INTEGER          NOT NULL CHECK (weight > 0),
@@ -49,9 +49,9 @@ CREATE TABLE Sportsman (
 CREATE TABLE Head (
     id                INTEGER          PRIMARY KEY,
     country_id        INTEGER          NOT NULL UNIQUE REFERENCES Country(id),
-    name              TEXT             NOT NULL CHECK (name SIMILAR TO '([A-Z][a-z]*[:space:])*[A-Z][a-z]*'),
-    phone             TEXT             NOT NULL UNIQUE CHECK (phone SIMILAR TO '\+[0-9]*'),
-    headquarters_id   INTEGER          NOT NULL UNIQUE REFERENCES Construction(id)
+    name              TEXT             NOT NULL,
+    phone             TEXT             NOT NULL,
+    headquarters_id   INTEGER          NOT NULL REFERENCES Construction(id)
 );
 
 -- list of events
@@ -68,21 +68,13 @@ CREATE TABLE Event (
 CREATE TABLE SportsmanEvents (
     sportsman_id      INTEGER          NOT NULL REFERENCES Sportsman(id),
     event_id          INTEGER          NOT NULL REFERENCES Event(id),
+    medal 			  TEXT 			   CHECK (medal IN ('gold', 'silver', 'bronze') OR medal IS NULL),
     PRIMARY KEY (sportsman_id, event_id)
-);
-
--- map: sportsmen -> their medals
-CREATE TABLE Medal (
-    sportsman_id      INTEGER          NOT NULL REFERENCES Sportsman(id),
-    event_id          INTEGER          NOT NULL REFERENCES Event(id),
-    medal             TEXT             NOT NULL CHECK (medal IN ('gold', 'silver', 'bronze')),
-    PRIMARY KEY (sportsman_id, event_id)
---    ,UNIQUE (event_id, medal)    there can be group competitions
 );
 
 -- list of vehicles
 CREATE TABLE Vehicle (
-    id                INTEGER          PRIMARY KEY,
+    id                TEXT             PRIMARY KEY,
     capacity          INTEGER          NOT NULL CHECK (capacity > 0)
 );
 
@@ -90,7 +82,7 @@ CREATE TABLE Vehicle (
 CREATE TABLE Task (
     id                SERIAL           PRIMARY KEY,
     content           TEXT             NOT NULL,
-    vehicle_id        INTEGER          NULL REFERENCES Vehicle(id)
+    vehicle_id        TEXT             NOT NULL REFERENCES Vehicle(id)
 );
 
 -- map: volunteer -> task
