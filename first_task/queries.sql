@@ -101,5 +101,4 @@ PopSport AS (
 ) 
 SELECT PS.name
 FROM PopSport PS JOIN Count C ON PS.name = C.name
-WHERE (C.cnt > 2) AND (2 * PS.cnt > C.cnt);
-
+WHERE (C.cnt > 2) AND (2 * PS.cnt >= C.cnt);
