@@ -83,6 +83,13 @@ ORDER BY address;
 
 DROP VIEW Events;
 
+-- 8.
+SELECT C.name, COUNT(E.medal = 'gold') AS gold_cnt, COUNT(E.medal = 'silver') AS silver_cnt, COUNT(E.medal = 'bronze') AS bronze_cnt
+FROM Country C LEFT JOIN Sportsman S ON C.id = S.country_id
+LEFT JOIN SportsmanEvents E ON S.id = E.sportsman_id
+GROUP BY C.id
+ORDER BY gold_cnt DESC, silver_cnt DESC, bronze_cnt DESC;
+
 -- 10.
 WITH Count AS ( 
   SELECT C.name, count(*) as cnt
