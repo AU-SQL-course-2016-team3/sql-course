@@ -82,3 +82,24 @@ FROM ((
 ORDER BY address;
 
 DROP VIEW Events;
+
+-- 10.
+WITH Count AS ( 
+  SELECT C.name, count(*) as cnt
+  FROM Sportsman S JOIN Country C ON S.country_id = C.id
+  GROUP BY C.id
+), 
+PopSport AS (
+  SELECT F.name, max(cnt) as cnt
+  FROM (
+    SELECT C.name, SS.sport_id, count(*) as cnt
+    FROM Sportsman S JOIN Country C ON S.country_id = C.id
+    JOIN SportsmanSports SS ON SS.sportsman_id = S.id
+    GROUP BY C.name, SS.sport_id
+  ) AS F
+  GROUP BY F.name
+) 
+SELECT PS.name
+FROM PopSport PS JOIN Count C ON PS.name = C.name
+WHERE (C.cnt > 2) AND (2 * PS.cnt > C.cnt);
+

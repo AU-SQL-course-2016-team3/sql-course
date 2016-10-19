@@ -69,7 +69,8 @@ CREATE TABLE Sportsman (
 -- map: sportsmen -> sport
 CREATE TABLE SportsmanSports (
         sportsman_id      INTEGER          NOT NULL REFERENCES Sportsman(id),
-   	sport_id          INTEGER          NOT NULL REFERENCES Sport(id)
+   	    sport_id          INTEGER          NOT NULL REFERENCES Sport(id),
+        UNIQUE (sportsman_id, sport_id)
 );
 
 -- list of teams' heads
