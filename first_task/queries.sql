@@ -58,8 +58,27 @@ CREATE VIEW Events AS (
     GROUP BY E.id
   )
   SELECT C.id, C.address, C.name, S.name as sport, E.event_date, cnt  
-  FROM Construction C LEFT JOIN EventNum E ON E.construction_id = C.id
+  FROM Construction C JOIN EventNum E ON E.construction_id = C.id
   LEFT JOIN Sport S ON S.id = E.sport_id
 );
 
--- Надо дописать  
+
+SELECT * 
+FROM ((
+  SELECT address, name, sport, event_date, cnt, 'max' as type
+  FROM (
+    SELECT id, address, name, sport, event_date, cnt, MAX(cnt) OVER (PARTITION BY id) as max
+    FROM Events 
+  ) as S
+  WHERE cnt = S.max
+) UNION ALL (
+  SELECT address, name, sport, event_date, cnt, 'min' as type
+  FROM (
+    SELECT id, address, name, sport, event_date, cnt, MIN(cnt) OVER (PARTITION BY id) as min
+    FROM Events 
+  ) as S
+  WHERE cnt = S.min
+)) as Q
+ORDER BY address;
+
+DROP VIEW Events;
