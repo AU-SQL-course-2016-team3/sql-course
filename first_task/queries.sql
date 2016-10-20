@@ -90,6 +90,29 @@ LEFT JOIN SportsmanEvents E ON S.id = E.sportsman_id
 GROUP BY C.id
 ORDER BY gold_cnt DESC, silver_cnt DESC, bronze_cnt DESC;
 
+-- 9.
+CREATE VIEW NV AS (
+	SELECT COUNT(*) FROM Sportsman S
+	GROUP BY S.volunteer_id
+);
+
+CREATE VIEW V1 AS (
+	SELECT ROW_NUMBER() OVER (ORDER BY count) AS row, count
+	FROM NV
+);
+
+CREATE VIEW V2 AS (
+	SELECT ROW_NUMBER() OVER (ORDER BY count DESC) AS row, count
+	FROM NV
+);
+
+SELECT V1.count
+FROM V1
+JOIN V2 ON (ABS(V1.row - V2.row) <= 1 AND V1.count = V2.count)
+LIMIT 1;
+
+DROP VIEW V1, V2, NV;
+
 -- 10.
 WITH Count AS (
   SELECT C.name, COUNT(*) as cnt
