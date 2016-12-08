@@ -55,15 +55,16 @@ CREATE TABLE Volunteer (
 
 -- list of sportsmen
 CREATE TABLE Sportsman (
-        id                INTEGER          PRIMARY KEY,
+        id                SERIAL           PRIMARY KEY,
         name              TEXT             NOT NULL,
+        sex               TEXT             NOT NULL CHECK (sex IN ('m', 'f')),
         age               INTEGER          NOT NULL CHECK (age > 0),
-        sex               TEXT             NOT NULL CHECK (sex IN ('male', 'female')),
         weight            INTEGER          NOT NULL CHECK (weight > 0),
         height            INTEGER          NOT NULL CHECK (height > 0),
-        country_id        INTEGER          NOT NULL REFERENCES Country(id),
-        home_id           INTEGER          NOT NULL REFERENCES Construction(id),
-        volunteer_id      INTEGER          NOT NULL REFERENCES Volunteer(id)
+        country           TEXT             NOT NULL
+--        country_id        INTEGER          NOT NULL REFERENCES Country(id),
+--        home_id           INTEGER          NOT NULL REFERENCES Construction(id),
+--        volunteer_id      INTEGER          NOT NULL REFERENCES Volunteer(id)
 );
 
 -- map: sportsmen -> sport
