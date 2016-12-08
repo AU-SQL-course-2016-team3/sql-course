@@ -12,7 +12,7 @@ import javax.persistence.Id;
 /**
  * Entity object corresponding to a single row in Spacecraft table
  */
-@Entity
+@Entity(name = "Sportsman")
 public class Sportsman {
 
     @Column

@@ -24,9 +24,13 @@ import static spark.Spark.get;
 import static spark.Spark.port;
 
 public class WebApp {
-  private static JdbcConnectionSource createConnectionSource() {
+
+  private static final String POSTGRES_DRIVER = "jdbc:postgresql://localhost:5432/postgres?user=postgres&password=foobar";
+  private static final String MYSQL_DRIVER = "jdbc:mysql://localhost:3306/mysql?user=root&password=foobar";
+
+  private static JdbcConnectionSource createConnectionSource(String driver) {
     try {
-      JdbcConnectionSource connectionSource = new JdbcConnectionSource("jdbc:postgresql://localhost:5432/postgres?user=postgres&password=foobar");
+      JdbcConnectionSource connectionSource = new JdbcConnectionSource(driver);
       connectionSource.getReadWriteConnection(null).setAutoCommit(false);
       return connectionSource;
     } catch (SQLException e) {
@@ -51,7 +55,7 @@ public class WebApp {
   }
 
   private static Object getAllSportsmen(Request req, Response resp) throws IOException, SQLException {
-    final JdbcConnectionSource connectionSource = createConnectionSource();
+    final JdbcConnectionSource connectionSource = createConnectionSource(MYSQL_DRIVER);
     resp.type("text/plain");
     return runTxn("REPEATABLE READ", connectionSource, () -> {
       List<String> sportsmen = DaoManager.createDao(connectionSource, Sportsman.class)
@@ -62,7 +66,7 @@ public class WebApp {
   }
 
   private static Object newSportsman(Request req, Response resp) throws IOException, SQLException {
-    final JdbcConnectionSource connectionSource = createConnectionSource();
+    final JdbcConnectionSource connectionSource = createConnectionSource(MYSQL_DRIVER);
 
     Object success = runTxn("READ COMMITTED", connectionSource, () -> {
       Dao<Sportsman, Integer> sportsmenDao = DaoManager.createDao(connectionSource, Sportsman.class);
