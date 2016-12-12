@@ -4,15 +4,14 @@
 // Author: Dmitry Barashev
 // License: WTFPL
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
- * Entity object corresponding to a single row in Spacecraft table
+ * Entity object corresponding to a single row in Sportsman table
  */
-@Entity(name = "Sportsman")
+
+@Entity
+@Table(name = "Sportsman")
 public class Sportsman {
 
     @Column
@@ -25,7 +24,9 @@ public class Sportsman {
     @Column private Integer age;
     @Column private Integer weight;
     @Column private Integer height;
-    @Column private String country;
+    @Column(name = "country_id") private Integer countryId;
+    @Column(name = "home_id") private Integer homeId;
+    @Column(name = "volunteer_id") private Integer volunteerId;
 
     // Required by ORM
     public Sportsman() {}
@@ -39,7 +40,9 @@ public class Sportsman {
         sb.append(", age=").append(age);
         sb.append(", weight=").append(weight);
         sb.append(", height=").append(height);
-        sb.append(", country='").append(country).append('\'');
+        sb.append(", country_id=").append(countryId);
+        sb.append(", home_id=").append(homeId);
+        sb.append(", volunteer_id=").append(volunteerId);
         sb.append('}');
         return sb.toString();
     }
@@ -76,12 +79,12 @@ public class Sportsman {
         this.weight = weight;
     }
 
-    public String getCountry() {
-        return country;
+    public Integer getCountryId() {
+        return countryId;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
     }
 
     public Integer getHeight() {
@@ -100,4 +103,19 @@ public class Sportsman {
         this.sex = sex;
     }
 
+    public Integer getHomeId() {
+        return homeId;
+    }
+
+    public void setHomeId(Integer homeId) {
+        this.homeId = homeId;
+    }
+
+    public Integer getVolunteerId() {
+        return volunteerId;
+    }
+
+    public void setVolunteerId(Integer volunteerId) {
+        this.volunteerId = volunteerId;
+    }
 }

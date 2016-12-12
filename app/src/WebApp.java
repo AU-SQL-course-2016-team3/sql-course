@@ -25,8 +25,11 @@ import static spark.Spark.port;
 
 public class WebApp {
 
-  private static final String POSTGRES_DRIVER = "jdbc:postgresql://localhost:5432/postgres?user=postgres&password=foobar";
-  private static final String MYSQL_DRIVER = "jdbc:mysql://localhost:3306/mysql?user=root&password=foobar";
+  /*
+   * change `mysql` on `postgresql` if you want to change db
+   */
+  private static final DriverUrlFactory.SupportedDrivers DRIVER_TO_USE = DriverUrlFactory.SupportedDrivers.MYSQL;
+  private static final String DRIVER_URL = DriverUrlFactory.getDriverUrl(DRIVER_TO_USE);
 
   private static JdbcConnectionSource createConnectionSource(String driver) {
     try {
@@ -55,7 +58,7 @@ public class WebApp {
   }
 
   private static Object getAllSportsmen(Request req, Response resp) throws IOException, SQLException {
-    final JdbcConnectionSource connectionSource = createConnectionSource(MYSQL_DRIVER);
+    final JdbcConnectionSource connectionSource = createConnectionSource(DRIVER_URL);
     resp.type("text/plain");
     return runTxn("REPEATABLE READ", connectionSource, () -> {
       List<String> sportsmen = DaoManager.createDao(connectionSource, Sportsman.class)
@@ -66,9 +69,16 @@ public class WebApp {
   }
 
   private static Object newSportsman(Request req, Response resp) throws IOException, SQLException {
-    final JdbcConnectionSource connectionSource = createConnectionSource(MYSQL_DRIVER);
+    final JdbcConnectionSource connectionSource = createConnectionSource(DRIVER_URL);
 
     Object success = runTxn("READ COMMITTED", connectionSource, () -> {
+      List<Country> countries = DaoManager.createDao(connectionSource, Country.class)
+          .queryForEq("name", countryCodeToCountry(req.queryMap("country").value()));
+
+      if (countries.size() != 1) {
+        return false;
+      }
+
       Dao<Sportsman, Integer> sportsmenDao = DaoManager.createDao(connectionSource, Sportsman.class);
 
       Sportsman newSportsman = new Sportsman();
@@ -77,7 +87,7 @@ public class WebApp {
       newSportsman.setAge(req.queryMap("age").integerValue());
       newSportsman.setWeight(req.queryMap("weight").integerValue());
       newSportsman.setHeight(req.queryMap("height").integerValue());
-      newSportsman.setCountry(countryCodeToCountry(req.queryMap("country").value()));
+      newSportsman.setCountryId(countries.get(0).getId());
 
       sportsmenDao.create(newSportsman);
       return true;
@@ -92,7 +102,7 @@ public class WebApp {
     return "Transaction failed";
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     port(8000);
     get("/sportsman/all", WebApp.withTry(WebApp::getAllSportsmen));
     get("/sportsman/new", WebApp.withTry(WebApp::newSportsman));
